@@ -12,5 +12,31 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('admin.auth.login');
+});
+
+Route::group(['middleware' => ['web']], function () {
+    
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function() {    
+    Route::resource('users', 'UsersController');
+    Route::post('users/destroy','UsersController@destroy')->name('users/destroy');
+});
+ 
+Auth::routes();
+Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+
+    Route::get('admin/auth/login', [
+        'uses'  => 'Auth\LoginController@showLoginForm',
+        'as'    => 'admin.auth.login'
+    ]);
+
+    Route::post('admin/auth/login', [
+        'uses'  => 'Auth\LoginController@login',
+        'as'    => 'admin.auth.login'
+    ]);
+
+    Route::get('admin/auth/logout', [
+        'uses'  => 'Auth\LoginController@logout',
+        'as'    => 'admin.auth.logout'
+    ]);
 });
